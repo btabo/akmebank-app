@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-command
+  labels:
+    app.kubernetes.io/part-of: akmebank
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: account-command-selector
+  template:
+    metadata:
+      labels:
+        app: account-command-selector
+    spec:
+      containers:
+      - name: account-command
+        image: IMAGE_AND_TAG
+        imagePullPolicy: Always
+        env:
+        - name: CONFIG_MOUNT_PATH
+          value: /etc/config 
+        resources:
+           limits:
+             memory: 512Mi
+             cpu: 500m
+           requests:
+             memory: 256Mi
+             cpu: 250m
+        volumeMounts:
+        - name: cos-creds
+          mountPath: /etc/config
+          readOnly: true
+      volumes:
+      - name: cos-creds
+        secret:
+          secretName: cos-secret

@@ -1,0 +1,212 @@
+version: '1'
+
+setup:
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    source scripts/code_setup.sh
+
+test:
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [[ "${PIPELINE_DEBUG:-0}" == 1 ]]; then
+      set -x
+      trap env EXIT
+    fi
+
+    cd "$WORKSPACE/$(load_repo app-repo path)"
+
+    export API_KEY=$(get_env AKME_COS_API_KEY)
+    export SERVICE_INSTANCE_ID=$(get_env AKME_COS_SERVICE_INSTANCE_ID "crn:v1:bluemix:public:cloud-object-storage:global:a/80c84878b3b02b88be3f836f0534b03e:0693b059-6e56-4eab-af12-7dddb1248c6d:bucket:akme-test-bucket")
+    export ENDPOINT_URL=$(get_env AKME_COS_ENDPOINT_URL "s3.eu-de.cloud-object-storage.appdomain.cloud")
+    export LOCATION=$(get_env AKME_COS_LOCATION "eu-de")
+    export TEST_BUCKET=$(get_env AKME_COS_TEST_BUCKET "akme-test-bucket")
+    export ACCOUNTS_BUCKET=$(get_env AKME_COS_ACCOUNTS_TEST_BUCKET "akme-account-test-bucket")
+    export USERS_BUCKET=$(get_env AKME_COS_USERS_TEST_BUCKET "akme-users-test-bucket")
+
+    exit_status=0
+
+    # Build the modules with maven
+    export MVN_LOCAL_REPO=${WORKSPACE}/.m2
+    if ! mvn -Dmaven.repo.local="$MVN_LOCAL_REPO" clean test; then
+        exit_status=1
+    fi
+
+    # Build the ui frontent
+    # TODO
+
+    exit ${exit_status}
+
+static-scan:
+  dind: true
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+      trap env EXIT
+      env
+      set -x
+    fi
+
+    export MVN_LOCAL_REPO=${WORKSPACE}/.m2
+
+    cd "$WORKSPACE/$(load_repo app-repo path)"
+
+    . scripts/sonarqube/sonarqube_run
+
+containerize:
+  dind: true
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+      trap env EXIT
+      env
+      set -x
+    fi
+
+    cd "$WORKSPACE/$(load_repo app-repo path)"
+
+    export MVN_LOCAL_REPO="${WORKSPACE}/.m2"
+
+    source scripts/build_setup.sh
+    source scripts/build.sh
+
+deploy:
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+      trap env EXIT
+      env
+      set -x
+    fi
+
+    source scripts/deploy_setup.sh
+    source scripts/deploy.sh
+
+sign-artifact:
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/image-signing:1.0.0@sha256:e9d8e354668ba3d40be2aaee08298d2aa7f0e1c8a1829cca4094ec93830e3e6a
+  script: |
+    #!/usr/bin/env bash
+    if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+      trap env EXIT
+      env
+      set -x
+    fi
+
+    source scripts/sign_image.sh
+
+acceptance-test:
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    set -euo pipefail
+
+    export IBMCLOUD_API_KEY
+    export HOME
+
+    if [ -f /config/api-key ]; then
+      IBMCLOUD_API_KEY="$(cat /config/api-key)" # pragma: allowlist secret
+    else
+      IBMCLOUD_API_KEY="$(cat /config/ibmcloud-api-key)" # pragma: allowlist secret
+    fi
+
+    HOME=/root
+    IBMCLOUD_IKS_REGION="$(cat /config/dev-region | awk -F ":" '{print $NF}')"
+    IBMCLOUD_IKS_REGION=$(echo "${IBMCLOUD_IKS_REGION}" | awk -F ":" '{print $NF}')
+    IBMCLOUD_IKS_CLUSTER_NAMESPACE="$(cat /config/dev-cluster-namespace)"
+    IBMCLOUD_IKS_CLUSTER_NAME="$(cat /config/cluster-name)"
+
+    ibmcloud login -r "${IBMCLOUD_IKS_REGION}"
+    ibmcloud ks cluster config --cluster "${IBMCLOUD_IKS_CLUSTER_NAME}"
+
+    ibmcloud ks cluster get --cluster "${IBMCLOUD_IKS_CLUSTER_NAME}" --json > "${IBMCLOUD_IKS_CLUSTER_NAME}.json"
+    # If the target cluster is openshift then make the appropriate additional login with oc tool
+    if which oc > /dev/null && jq -e '.type=="openshift"' "${IBMCLOUD_IKS_CLUSTER_NAME}.json" > /dev/null; then
+      echo "${IBMCLOUD_IKS_CLUSTER_NAME} is an openshift cluster. Doing the appropriate oc login to target it"
+      oc login -u apikey -p "${IBMCLOUD_API_KEY}"
+    fi    
+
+    # Use the CLI image built to create/populate
+    cli_image=$(load_artifact cli name)
+
+    # ensure no accounts or users exists
+    kubectl run cli --rm -it --image $cli_image --restart=Never --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- delete-accounts
+    kubectl run cli --rm -it --image $cli_image --restart=Never --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- delete-users
+
+    # create a single user with 3 accounts
+    kubectl run cli --rm -it --image $cli_image --restart=Never --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- create-named Jack Doe
+
+    # list users (should have only one)
+    number_of_users=$(kubectl run cli --restart=Never -it --image $cli_image --rm --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-users | tail -n+2 | jq -r length)
+    if [[ $number_of_users -ne 1 ]]; then
+      echo "Expecting 1 user. Found $number_of_users"
+      exit 1
+    fi
+
+    # list accounts (should have only 3)
+    number_of_accounts=$(kubectl run cli --restart=Never -it --image $cli_image --rm --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-accounts | tail -n+2 | jq -r length)
+    if [[ $number_of_accounts -ne 3 ]]; then
+      echo "Expecting 3 accounts. Found $number_of_accounts"
+      exit 1
+    fi
+
+release:
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    source scripts/release.sh
+
+scan-artifact:
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+      trap env EXIT
+      env
+      set -x
+    fi
+
+    source scripts/va_scan.sh
+
+dynamic-scan:
+  dind: true 
+  abort_on_failure: false
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+      trap env EXIT
+      env
+      set -x
+    fi
+
+    echo "Dynamic Application Scan is in feature preview mode."
+    echo "To setup dynamic scan for your app follow the documentation at https://cloud.ibm.com/docs/devsecops?topic=devsecops-custom-scripts."
+    
+    export APP_URL=$(get_env APP_URL)
+    echo "APP_URL is ${APP_URL}"
+
+    set_env "app-url" "$APP_URL"    
+    set_env "target-application-server-url" "$APP_URL"    
+    
+    source scripts/zap/trigger_zap_scans

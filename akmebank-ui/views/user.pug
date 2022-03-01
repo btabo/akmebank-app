@@ -1,0 +1,31 @@
+extends layout
+
+block layout-content
+  div.View.UserView
+    h1.Banner Hello #{userName}!
+    div.NavButtons
+      a(href="/accounts")
+        div.NavButton Accounts
+    div.Message
+      div.Title
+        h1 Your Profile
+      div.table
+        table(style='width:100%', border='1')
+          tr
+            td= `Name`
+            td= `${userProfile.firstName} ${userProfile.lastName}`
+          tr
+            td= `Address`
+            td= `${userProfile.address.street},${userProfile.address.city},${userProfile.address.state} ${userProfile.address.zipcode}`
+          tr
+            td= `Phone`
+            td= `${userProfile.phoneNumber}`
+          tr
+            td= `Email`
+            td= `${userProfile.email}`
+          tr
+            td= `Tax ID`
+            td= `${userProfile.taxID.replace(new RegExp("[0-9]", "g"), "*")}` 
+    div.NavButtons
+      a(href="/logout")
+        div.NavButton Sign out

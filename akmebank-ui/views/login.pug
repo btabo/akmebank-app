@@ -1,0 +1,19 @@
+extends layout
+
+block layout-content
+  div.View.WelcomeView
+    h1.Banner Akme Bank
+    div.Message
+      div.Title
+        h3 Providing the Best
+        h1 Banking Experience For You
+    div.NavButtons
+      form(method='POST' action='/login')
+          div.form-group
+            label(for='username') Username
+            input.form-control(type='text' id='username' placeholder='username' name='username')
+          div.form-group
+            label(for='password') Password
+            input.form-control(type='password' id='password' placeholder='password' name='password')
+          div.form-group 
+            button.btn.btn-primary(type='submit').NavButton Sign in 

@@ -1,0 +1,216 @@
+#!/usr/bin/env node
+const yargs = require("yargs");
+const axios = require("axios");
+const fakerator = require("fakerator")();
+
+const SAVINGS_ACCOUNT = "Savings";
+const CHECKING_ACCOUNT = "Checking";
+const CD_ACCOUNT = "CD";
+
+const command = yargs.command('create <n>', 'create n users with 3 accounts each', (yargv) => {
+  yargv.positional('n', {
+    describe: 'number of users to create',
+    type: 'int'
+  })
+})
+  .command('create-named <first> <last>', 'create named user with 3 accounts', (yargv) => {
+    yargv.positional('first', {
+      describe: 'first name',
+      type: 'string'
+    })
+      .positional('last', {
+        describe: 'last name',
+        type: 'string'
+      })
+  })
+  .command('delete-users', 'delete all users', (yargv) => {
+  })
+  .command('delete-accounts', 'delete all accounts', (yargv) => {
+  })
+  .command('list-users', 'list all users', (yargv) => {
+  })
+  .command('list-accounts', 'list all accounts', (yargv) => {
+  })
+  .demandCommand()
+  .help()
+  .argv
+
+switch (command._[0]) {
+  case 'create':
+    createUsersWithAccounts(command.n);
+    break;
+  case 'create-named':
+    createNamedUserWithAccounts(command.first, command.last);
+    break;
+  case 'delete-users':
+    deleteEntities('/users');
+    break;
+  case 'delete-accounts':
+    deleteEntities('/accounts');
+    break;
+  case 'list-users':
+    listUsers();
+    break;
+  case 'list-accounts':
+    listAccounts();
+    break;
+}
+
+function createUsersWithAccounts(n) {
+  commandUrl = getCommandURL();
+  console.log('creating ' + n + ' user accounts at ' + commandUrl);
+  for (var i = 0; i < n; i++) {
+    userWithAccounts = generateUserWithAccounts(null, null);
+    console.log(userWithAccounts);
+    postUserWithAccounts(userWithAccounts, commandUrl);
+  }
+}
+
+function createNamedUserWithAccounts(firstName, lastName) {
+  commandUrl = getCommandURL();
+  console.log('creating named user account at ' + commandUrl);
+  userWithAccounts = generateUserWithAccounts(firstName, lastName);
+  console.log(userWithAccounts);
+  postUserWithAccounts(userWithAccounts, commandUrl);
+}
+
+async function listAccounts() {
+  var url = getQueryURL() + '/accounts'
+  var res = await listEntities(url);
+  console.log(JSON.stringify(res));
+}
+
+async function listUsers() {
+  var url = getQueryURL() + '/users'
+  var res = await listEntities(url);
+  console.log(JSON.stringify(res));
+}
+
+async function deleteEntities(path) {
+  var queryUrl = getQueryURL() + path;
+  var commandUrl = getCommandURL() + path;
+  var res = await listEntities(queryUrl);
+  for (var i = 0; i < res.length; i++) {
+    await axios({ method: 'delete', url: commandUrl + '/' + res[i].id });
+  }
+}
+
+function generateUserWithAccounts(firstName, lastName) {
+  var cdAccount = generateAccount(CD_ACCOUNT);
+  var checkingAccount = generateAccount(CHECKING_ACCOUNT);
+  var savingAccount = generateAccount(SAVINGS_ACCOUNT);
+  var user = generateUser(firstName, lastName);
+  user.accountNumbers = [cdAccount.id, checkingAccount.id, savingAccount.id];
+  return { user: user, accounts: [checkingAccount, savingAccount, cdAccount] };
+}
+
+function generateAccount(type) {
+  var maxBalance = 1000;
+  availableBalance = Math.floor(Math.random() * maxBalance).toFixed(2);
+  presentBalance = availableBalance;
+  return account = {
+    id: generateId(14),
+    type: type,
+    availableBalance: availableBalance,
+    presentBalance: presentBalance,
+    interestRate: getInterestRateFromType(type)
+  }
+}
+
+function generateUser(firstName, lastName) {
+  console.log('firstname: ' + firstName + ' lastName:' + lastName);
+  if (firstName == null) {
+    firstName = fakerator.names.firstName();
+  }
+  if (lastName == null) {
+    lastName = fakerator.names.firstName();
+  }
+  userProfile = {
+    id: generateId(12),
+    firstName: firstName,
+    lastName: lastName,
+    phoneNumber: fakerator.phone.number(),
+    email: fakerator.internet.userName(firstName, lastName) + '@email.com',
+    address: {
+      street: fakerator.address.street(),
+      city: fakerator.address.city(),
+      country: 'USA',
+      state: "CA",
+      zipcode: fakerator.address.postCode()
+    },
+    taxID: "000-00-0000"
+  }
+  return userProfile;
+}
+
+function postUserWithAccounts(userWithAccounts, commandUrl) {
+  var accountUrl = commandUrl + '/accounts';
+  var userUrl = commandUrl + '/users';
+  for (var i = 0; i < userWithAccounts.accounts.length; i++) {
+    axios({ method: 'post', url: accountUrl, data: userWithAccounts.accounts[i] });
+  }
+  axios({ method: 'post', url: userUrl, data: userWithAccounts.user });
+}
+
+function getInterestRateFromType(type) {
+  var rate;
+  switch (type) {
+    case SAVINGS_ACCOUNT:
+      rate = 0.50;
+      break;
+    case CHECKING_ACCOUNT:
+      rate = 0.25;
+      break;
+    case CD_ACCOUNT:
+      rate = 0.75;
+      break;
+    default:
+      rate = 0.0;
+  }
+  return rate;
+}
+
+async function listEntities(url) {
+  var res;
+  await axios.get(url)
+    .then(function (response) {
+      res = response.data;
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  return res;
+}
+
+function getCommandURL() {
+  var url = process.env.COMMAND_SERVICE_URL
+  if (url == null || url == "") {
+    url = 'http://account-command:8080'
+    console.log('COMMAND_SERVICE_URL not defined. Falling back to: ' + url)
+  }
+  return url
+}
+
+function getQueryURL() {
+  var url = process.env.QUERY_SERVICE_URL
+  if (url == null || url == "") {
+    url = 'http://account-query:8080'
+    console.log('QUERY_SERVICE_URL not defined. Falling back to: ' + url)
+  }
+  return url
+}
+
+function generateId(n) {
+  var add = 1,
+    max = 12 - add;
+
+  if (n > max) {
+    return generateId(max) + generateId(n - max);
+  }
+
+  max = Math.pow(10, n + add);
+  var min = max / 10; // Math.pow(10, n) basically 
+  var number = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  return ("" + number).substring(add);
+}

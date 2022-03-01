@@ -1,0 +1,29 @@
+extends layout
+
+block layout-content
+  div.View.UserView
+    h1.Banner Hello #{userName}!
+    div.NavButtons
+      a(href="/user")
+        div.NavButton Your Profile
+    div.Message
+      div.Title
+        h1 Your Accounts  
+      div.table
+        table(style='width:100%', border='1')
+          tr
+            th Account
+            th Available
+            th Present
+            th Type
+            th Rate
+          each account in accounts
+            tr
+              td= account.id
+              td= `$ ${account.availableBalance.toFixed(2)}`
+              td= `$ ${account.presentBalance.toFixed(2)}`
+              td= account.type
+              td= `${account.interestRate} %`
+    div.NavButtons
+      a(href="/logout")
+        div.NavButton Sign out
