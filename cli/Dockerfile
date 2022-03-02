@@ -1,7 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:1-14
-
-# https://access.redhat.com/errata/RHSA-2022:0658
-RUN dnf --assumeyes --best install cyrus-sasl
+FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:1-14.1645811213
 
 USER root
 WORKDIR "/tools"
