@@ -144,6 +144,8 @@ acceptance-test:
     # Use the CLI image built to create/populate
     cli_image=$(load_artifact cli name)
 
+    echo "Performing acceptance tests using $cli_image"
+
     # ensure no accounts or users exists
     kubectl run cli --rm -it --image $cli_image --restart=Never --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- delete-accounts
     kubectl run cli --rm -it --image $cli_image --restart=Never --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- delete-users
