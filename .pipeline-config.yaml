@@ -5,7 +5,21 @@ setup:
   script: |
     #!/usr/bin/env bash
 
+    set -euo pipefail
+
+    if [[ "${PIPELINE_DEBUG:-0}" == 1 ]]; then
+      set -x
+      trap env EXIT
+    fi
+
     source scripts/code_setup.sh
+
+    cd "$WORKSPACE/$(load_repo app-repo path)"
+
+    export MVN_LOCAL_REPO=${WORKSPACE}/.m2
+    if ! mvn -Dmaven.repo.local="$MVN_LOCAL_REPO" clean compile; then
+        exit 1
+    fi
 
 test:
   abort_on_failure: false
@@ -13,7 +27,6 @@ test:
   script: |
     #!/usr/bin/env bash
 
-    #!/usr/bin/env bash
     set -euo pipefail
 
     if [[ "${PIPELINE_DEBUG:-0}" == 1 ]]; then
@@ -35,12 +48,9 @@ test:
 
     # Build the modules with maven
     export MVN_LOCAL_REPO=${WORKSPACE}/.m2
-    if ! mvn -Dmaven.repo.local="$MVN_LOCAL_REPO" clean test; then
+    if ! mvn -Dmaven.repo.local="$MVN_LOCAL_REPO" test; then
         exit_status=1
     fi
-
-    # Build the ui frontent
-    # TODO
 
     exit ${exit_status}
 
