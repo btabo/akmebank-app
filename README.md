@@ -5,7 +5,6 @@ Using Java and Quarkus and COS Java SDK.
  
 ## Deploying
   
-  
 Deploying the account-command-ms: 
 
 ```bash 
@@ -67,6 +66,20 @@ kubectl run cli --rm -it --image us.icr.io/paolo/account-cli --restart=Never --q
 kubectl run cli --rm -it --image us.icr.io/paolo/account-cli --restart=Never --quiet=true -- delete-users
 ```
 
-AKME Terraform configuration for Cloud infrastructure. 
+## AKME Terraform configuration for Cloud infrastructure. 
 
-![AKME Architecture](https://github.ibm.com/think2020/terraform-ca/blob/master/AKME_arch1.png)
+![AKME Architecture](./AKME_arch1.png)
+
+## DevSecOps CI and CD pipeline configuration
+
+The COS configuration is required for the deployment stage in the DevSecOps CI or DevSecOps CD pipelines.
+The values should be provided thru the following environment properties:
+
+| Environment Property | Description | Default value |
+|---|---|---|
+| AKME_COS_API_KEY | API Key to acces the COS service | |
+| AKME_COS_SERVICE_INSTANCE_ID | COS service instance id | |
+| AKME_COS_ENDPOINT_URL | COS endpoint URL | s3.eu-de.cloud-object-storage.appdomain.cloud |
+| AKME_COS_LOCATION | COS instance location | eu-de |
+| AKME_COS_ACCOUNTS_BUCKET | COS Bucket nme for AKME accounts | akme-account-bucket |
+| AKME_COS_USERS_BUCKET | COS Bucket name for AKME users | akme-users-bucket |
