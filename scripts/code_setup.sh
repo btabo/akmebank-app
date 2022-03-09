@@ -6,7 +6,7 @@ APP_TOKEN_PATH="./app-token"
 read -r APP_REPO_NAME APP_REPO_OWNER APP_SCM_TYPE APP_API_URL < <(get_repo_params "$(get_env APP_REPO)" "$APP_TOKEN_PATH")
 
 if [[ $APP_SCM_TYPE == "gitlab" ]]; then
-  curl --location --request PUT "${APP_API_URL}/projects/${OWNER}%2F${REPO}/" \
+  curl --location --request PUT "${APP_API_URL}/projects/${APP_REPO_OWNER}%2F${APP_REPO_NAME}/" \
     --header "PRIVATE-TOKEN: $(cat $APP_TOKEN_PATH)" \
     --header 'Content-Type: application/json' \
     --data-raw '{
