@@ -1,10 +1,14 @@
 [
-{
-    "cve": "SNYK-JAVA-COMGOOGLEGUAVA-1015415",
-	"alwaysOmit": true
-},
-{
-    "cve": "SNYK-JAVA-COMGOOGLECODEGSON-1730327",
-	"alwaysOmit": true
-}
+    {
+        "cve": "SNYK-JAVA-COMGOOGLEGUAVA-1015415",
+        "alwaysOmit": true
+    },
+    {
+        "cve": "SNYK-JAVA-COMGOOGLECODEGSON-1730327",
+        "alwaysOmit": true
+    },
+    {
+        "cve": "SNYK-JAVA-COMFASTERXMLJACKSONCORE-2421244",
+        "untilRemediationAvailable": true
+    }
 ]
