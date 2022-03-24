@@ -27,7 +27,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "kind-of": "^6.0.3",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "mkdirp": "^1.0.3",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
