@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: akmebank-ui
@@ -7,10 +7,13 @@ spec:
   - host: akmebank-app.cluster-ingress-subdomain
     http:
       paths:
-      - backend:
-          serviceName: akmebank-ui-cip
-          servicePort: 80
-        path: /
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: akmebank-ui-cip
+            port: 
+              number: 80
   tls:
   - hosts:
     - akmebank-app-app.cluster-ingress-subdomain
