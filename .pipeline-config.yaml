@@ -126,21 +126,21 @@ acceptance-test:
     echo "Performing acceptance tests using $cli_image"
 
     # ensure no accounts or users exists
-    kubectl run cli --rm -it --image $cli_image --restart=Never --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- delete-accounts
-    kubectl run cli --rm -it --image $cli_image --restart=Never --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- delete-users
+    kubectl run cli --rm -it --image $cli_image --restart=Never --wait=true --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- delete-accounts
+    kubectl run cli --rm -it --image $cli_image --restart=Never --wait=true --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- delete-users
 
     # create a single user with 3 accounts
-    kubectl run cli --rm -it --image $cli_image --restart=Never --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- create-named Jack Doe
+    kubectl run cli --rm -it --image $cli_image --restart=Never --wait=true --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- create-named Jack Doe
 
     # list users (should have only one)
-    number_of_users=$(kubectl run cli --restart=Never -it --image $cli_image --rm --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-users | tail -n+2 | jq -r length)
+    number_of_users=$(kubectl run cli --restart=Never --wait=true -it --image $cli_image --rm --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-users | tail -n+2 | jq -r length)
     if [[ $number_of_users -ne 1 ]]; then
       echo "Expecting 1 user. Found $number_of_users"
       exit 1
     fi
 
     # list accounts (should have only 3)
-    number_of_accounts=$(kubectl run cli --restart=Never -it --image $cli_image --rm --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-accounts | tail -n+2 | jq -r length)
+    number_of_accounts=$(kubectl run cli --restart=Never --wait=true -it --image $cli_image --rm --wait=true --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-accounts | tail -n+2 | jq -r length)
     if [[ $number_of_accounts -ne 3 ]]; then
       echo "Expecting 3 accounts. Found $number_of_accounts"
       exit 1
