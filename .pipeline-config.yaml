@@ -133,16 +133,18 @@ acceptance-test:
     kubectl run cli --rm -it --image $cli_image --restart=Never --wait=true --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- create-named Jack Doe
 
     # list users (should have only one)
+    sleep 5s
     number_of_users=$(kubectl run cli --restart=Never --wait=true -it --image $cli_image --rm --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-users | tail -n+2 | jq -r length)
     if [[ $number_of_users -ne 1 ]]; then
-      echo "Expecting 1 user. Found $number_of_users"
+      echo "Expecting 1 user. Found $number_of_users."
       exit 1
     fi
 
     # list accounts (should have only 3)
+    sleep 5s
     number_of_accounts=$(kubectl run cli --restart=Never --wait=true -it --image $cli_image --rm --wait=true --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-accounts | tail -n+2 | jq -r length)
     if [[ $number_of_accounts -ne 3 ]]; then
-      echo "Expecting 3 accounts. Found $number_of_accounts"
+      echo "Expecting 3 accounts. Found $number_of_accounts."
       exit 1
     fi
 
