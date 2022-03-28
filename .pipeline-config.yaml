@@ -137,7 +137,8 @@ acceptance-test:
     number_of_users=$(kubectl run cli --restart=Never --wait=true -it --image $cli_image --rm --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-users | tail -n+2 | jq -r length)
     re='^[0-9]+$'
     if ! [[ $number_of_users =~ $re ]] ; then
-      echo "number_of_users found not a number: $number_of_users. Retrying..."
+      echo "number_of_users found not a number: $number_of_users. Retrying after sleep 5s..."
+      sleep 5s
       number_of_users=$(kubectl run cli --restart=Never --wait=true -it --image $cli_image --rm --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-users | tail -n+2 | jq -r length)
     fi    
     if [[ $number_of_users -ne 1 ]]; then
@@ -149,7 +150,8 @@ acceptance-test:
     sleep 5s
     number_of_accounts=$(kubectl run cli --restart=Never --wait=true -it --image $cli_image --rm --wait=true --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-accounts | tail -n+2 | jq -r length)
     if ! [[ $number_of_accounts =~ $re ]] ; then
-      echo "number_of_accounts found not a number: $number_of_accounts. Retrying..."
+      echo "number_of_accounts found not a number: $number_of_accounts. Retrying after sleep 5s..."
+      sleep 5s
       number_of_accounts=$(kubectl run cli --restart=Never --wait=true -it --image $cli_image --rm --wait=true --quiet=true -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE} -- list-accounts | tail -n+2 | jq -r length)
     fi    
     if [[ $number_of_accounts -ne 3 ]]; then
