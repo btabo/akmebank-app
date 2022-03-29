@@ -14,12 +14,14 @@ setup:
 
     source scripts/code_setup.sh
 
-    cd "$WORKSPACE/$(load_repo app-repo path)"
-
     export MVN_LOCAL_REPO=${WORKSPACE}/.m2
-    if ! mvn -Dmaven.repo.local="$MVN_LOCAL_REPO" clean compile; then
-        exit 1
-    fi
+    while read -r key; do
+      cd "$WORKSPACE/$(load_repo $key path)"
+      echo "context for mvn clean & compile is $(pwd)"
+      if ! mvn -Dmaven.repo.local="$MVN_LOCAL_REPO" clean compile; then
+          exit 1
+      fi
+    done < <(list_repos)
 
 test:
   abort_on_failure: false
