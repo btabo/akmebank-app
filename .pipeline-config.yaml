@@ -12,7 +12,10 @@ setup:
       trap env EXIT
     fi
 
-    source scripts/code_setup.sh
+    if [[ "$(get_env pipeline_namespace "")" == "pr" || "$(get_env pipeline_namespace "")" == "ci" ]]; then
+      # put the PR status checks only when CI or PR pipeline
+      source scripts/code_setup.sh
+    fi
 
     export MVN_LOCAL_REPO=${WORKSPACE}/.m2
     while read -r key; do
@@ -55,6 +58,20 @@ test:
     fi
 
     exit ${exit_status}
+
+static-scan:
+  dind: true
+  image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.12@sha256:ff4053b0bca784d6d105fee1d008cfb20db206011453071e86b69ca3fde706a4
+  script: |
+    #!/usr/bin/env bash
+
+    if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+      trap env EXIT
+      env
+      set -x
+    fi
+
+    . /workspace/app/one-pipeline-config-repo/scripts/static-scan/run.sh
 
 containerize:
   dind: true

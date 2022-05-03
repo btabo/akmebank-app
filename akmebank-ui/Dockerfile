@@ -1,6 +1,10 @@
-FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:1-21
+FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:1-39
 
 USER root
+
+# https://security.snyk.io/vuln/SNYK-RHEL8-ZLIB-2434350
+RUN microdnf -y update zlib
+
 WORKDIR "/app"
 ADD . /app
 RUN  npm install
