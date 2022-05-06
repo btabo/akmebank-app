@@ -16,5 +16,5 @@ spec:
               number: 80
   tls:
   - hosts:
-    - akmebank-app-app.cluster-ingress-subdomain
+    - akmebank-app.cluster-ingress-subdomain
     secretName: cluster-ingress-secret
