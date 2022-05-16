@@ -83,3 +83,9 @@ The values should be provided thru the following environment properties:
 | AKME_COS_LOCATION | COS instance location | eu-de |
 | AKME_COS_ACCOUNTS_BUCKET | COS Bucket nme for AKME accounts | akme-account-bucket |
 | AKME_COS_USERS_BUCKET | COS Bucket name for AKME users | akme-users-bucket |
+
+If SonarQube static scan is enabled (using `opt-in-sonar` feature flag), the sonarqube scanner command to use has to be given as it needs to use the maven sonar plugin
+
+| Environment Property | Description | Value |
+|---|---|---|
+| sonarqube-scan-command | the command to use for sonarqube scan | `mvn -Dmaven.repo.local="${WORKSPACE}/.m2" -Dsonar.login="$(cat /tmp/sonarqube-token)" -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.projectKey="$SONAR_PROJECT_KEY" -Dsonar.projectName="$SONAR_PROJECT_KEY" -Dsonar.working.directory="$(realpath --relative-to=$(pwd) $SONAR_DIR)" sonar:sonar` |
