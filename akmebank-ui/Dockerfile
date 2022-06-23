@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:1-43
+FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:latest
 
 USER root
 
