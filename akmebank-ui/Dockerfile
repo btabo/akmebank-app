@@ -2,8 +2,6 @@ FROM registry.access.redhat.com/ubi8/nodejs-16-minimal:latest
 
 USER root
 
-RUN yum update -y && yum upgrade -y
-
 # https://security.snyk.io/vuln/SNYK-RHEL8-ZLIB-2434350
 RUN microdnf -y update zlib
 
