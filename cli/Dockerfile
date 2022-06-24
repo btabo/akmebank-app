@@ -6,8 +6,6 @@ ADD . /tools
 
 USER root
 
-RUN yum update -y && yum upgrade -y
-
 # https://security.snyk.io/vuln/SNYK-RHEL8-ZLIB-2434350
 RUN microdnf -y update zlib
 
