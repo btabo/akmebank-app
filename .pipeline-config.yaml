@@ -98,6 +98,12 @@ acceptance-test:
   script: |
     #!/usr/bin/env bash
 
+    if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+      trap env EXIT
+      env
+      set -x
+    fi
+
     set -euo pipefail
 
     export IBMCLOUD_API_KEY
