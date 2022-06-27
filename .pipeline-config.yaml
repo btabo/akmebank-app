@@ -104,8 +104,6 @@ acceptance-test:
       set -x
     fi
 
-    set -euo pipefail
-
     export IBMCLOUD_API_KEY
     export HOME
 
