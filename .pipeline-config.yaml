@@ -133,12 +133,16 @@ acceptance-test:
     echo ""
     echo "Cleaning cli pod if any..."
     STATUS=$(kubectl get pods -n "${IBMCLOUD_IKS_CLUSTER_NAMESPACE}" | grep cli |  awk 'FNR == 1 {print $3}')
-    if [ "${STATUS}" = "Completed" ]; then
-      echo "Pod found: deleting it..."
-      kubectl delete pod cli -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE}
-      echo "Pod deleted."
-    else
+    if [ -z "${STATUS}" ]; then
       echo "No pod found."
+    else
+      if [ "${STATUS}" = "Completed" ]; then
+        echo "Pod found: deleting it..."
+        kubectl delete pod cli -n${IBMCLOUD_IKS_CLUSTER_NAMESPACE}
+        echo "Pod deleted."
+      else
+        echo "Pod found with status $STATUS. Not deleting it..."
+      fi
     fi
     echo ""
 
