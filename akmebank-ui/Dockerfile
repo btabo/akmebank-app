@@ -12,5 +12,8 @@ ADD . /app
 RUN  npm install
 ENV PATH="/app:${PATH}"
 
+# TODO - remove - for debugging only
+RUN node --version
+RUN npm --version
 ENTRYPOINT ["npm","start"]
 
