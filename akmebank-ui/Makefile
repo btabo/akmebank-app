@@ -13,4 +13,3 @@ run:
 deploy:
 	sed "s|CLUSTER_NAMESPACE|${NS}|;s|IMAGE_AND_TAG|${IMG}:${TAG}|" k8s/deployment.yaml | kubectl apply -f -
 	sed "s|CLUSTER_NAMESPACE|${NS}|;s|IMAGE_AND_TAG|${IMG}:${TAG}|" k8s/service.yaml | kubectl apply -f -
-

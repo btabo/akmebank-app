@@ -20,4 +20,3 @@ RUN  npm install
 ENV PATH="/tools:${PATH}"
 
 ENTRYPOINT ["accounts"]
-

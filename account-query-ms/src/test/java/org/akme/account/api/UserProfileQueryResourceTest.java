@@ -20,7 +20,7 @@ public class UserProfileQueryResourceTest {
     @Test
     public void testGetUserProfile() {
         UserProfile user = makeUserProfile("u1234");
-        userProfileService.createUserProfile(user); 
+        userProfileService.createUserProfile(user);
         given()
           .when().get("/users/u1234")
           .then()
@@ -32,7 +32,7 @@ public class UserProfileQueryResourceTest {
     public void testGetUserProfiles() {
         for(int i=0;i<3;i++){
             UserProfile user = makeUserProfile("u1234-"+i);
-            userProfileService.createUserProfile(user); 
+            userProfileService.createUserProfile(user);
         }
         given()
           .when().get("/users")

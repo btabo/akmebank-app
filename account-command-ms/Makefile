@@ -3,7 +3,7 @@ TAG ?= 1.0.0
 NS ?=thinkdemo
 MVN_LOCAL_REPO ?= ~/.m2/repository
 
-test: 
+test:
 	mvn test
 
 build:
@@ -20,7 +20,7 @@ run:
 deploy:
 	sed "s|IMAGE_AND_TAG|${IMG}:${TAG}|" k8s/deployment.yaml | kubectl apply -n${NS} -f -
 	kubectl apply -n${NS} -f k8s/service.yaml
-	
+
 create-cos-secret:
 	kubectl create secret generic cos-secret \
 	--from-literal=API_KEY=${API_KEY} \

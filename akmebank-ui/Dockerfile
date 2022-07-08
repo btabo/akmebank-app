@@ -13,4 +13,3 @@ RUN  npm install
 ENV PATH="/app:${PATH}"
 
 ENTRYPOINT ["npm","start"]
-

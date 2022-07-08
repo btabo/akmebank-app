@@ -25,7 +25,7 @@ block layout-content
             td= `${userProfile.email}`
           tr
             td= `Tax ID`
-            td= `${userProfile.taxID.replace(new RegExp("[0-9]", "g"), "*")}` 
+            td= `${userProfile.taxID.replace(new RegExp("[0-9]", "g"), "*")}`
     div.NavButtons
       a(href="/logout")
         div.NavButton Sign out

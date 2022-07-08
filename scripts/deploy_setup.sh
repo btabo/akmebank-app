@@ -18,7 +18,7 @@ fi
 
 HOME=/root
 IBMCLOUD_TOOLCHAIN_ID="$(jq -r .toolchain_guid /toolchain/toolchain.json)"
-IBMCLOUD_IKS_REGION="$(cat /config/dev-region | awk -F ":" '{print $NF}')"
+IBMCLOUD_IKS_REGION="$(awk -F ":" '{print $NF}' < /config/dev-region)"
 IBMCLOUD_IKS_CLUSTER_NAMESPACE="$(cat /config/dev-cluster-namespace)"
 IBMCLOUD_IKS_CLUSTER_NAME="$(cat /config/cluster-name)"
 # Use the first microservice image to retrieve the regitrsy url

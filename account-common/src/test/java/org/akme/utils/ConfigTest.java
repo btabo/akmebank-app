@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 
 
-class ConfigTest {   
+class ConfigTest {
     Config config;
 
     // @Test
@@ -54,7 +54,7 @@ class ConfigTest {
         config = new Config();
         Exception exception = assertThrows(ConfigException.class, () -> {
             config.getConfigValue("NOT_EXISTING_VALUE");
-        });   
+        });
         assertTrue(exception.getMessage().contains("key not found"));
     }
 
@@ -68,7 +68,7 @@ class ConfigTest {
         assertTrue(exception.getMessage().contains("key not found"));
         EnvVarInjector.removeEnvironmentVariable("CONFIG_MOUNT_PATH");
     }
- 
+
     private void writeTestKey(String key, String value) {
         try {
           Path path = Paths.get(System. getenv("CONFIG_MOUNT_PATH"), key);
@@ -79,5 +79,5 @@ class ConfigTest {
           e.printStackTrace();
         }
       }
-   
+
 }

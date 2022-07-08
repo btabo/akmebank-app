@@ -21,7 +21,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: CONFIG_MOUNT_PATH
-          value: /etc/config 
+          value: /etc/config
         resources:
            limits:
              memory: 512Mi

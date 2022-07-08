@@ -3,7 +3,7 @@ TAG ?= 1.0.0
 NS ?=thinkdemo
 MVN_LOCAL_REPO ?= ~/.m2/repository
 
-test: 
+test:
 	mvn test
 
 build:
