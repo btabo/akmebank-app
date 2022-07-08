@@ -21,14 +21,14 @@ class EnvVarInjector {
     public static void removeEnvironmentVariable(String key)
     throws Exception {
         Object unmodifiableMap = getProcessEnvUnModifiableMap();
-        removeFromUnmodifiableMap(key,  unmodifiableMap);        
+        removeFromUnmodifiableMap(key,  unmodifiableMap);
     }
 
     private static Object getProcessEnvUnModifiableMap() throws Exception {
         Class<?> processEnvironment = Class.forName("java.lang.ProcessEnvironment");
         Field unmodifiableMapField = getAccessibleField(processEnvironment, "theUnmodifiableEnvironment");
         return unmodifiableMapField.get(null);
-    } 
+    }
 
     private static Field getAccessibleField(Class<?> clazz, String fieldName)
         throws NoSuchFieldException {

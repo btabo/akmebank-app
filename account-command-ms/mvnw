@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2006,SC2155,SC2164,SC2046,SC2034,SC2005,SC2086,SC2162,SC2124
 # ----------------------------------------------------------------------------
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -246,7 +247,7 @@ else
         else
             curl --user $MVNW_USERNAME:$MVNW_PASSWORD -o "$wrapperJarPath" "$jarUrl" -f
         fi
-        
+
     else
         if [ "$MVNW_VERBOSE" = true ]; then
           echo "Falling back to using Java to download"

@@ -18,7 +18,7 @@ public class CosClient {
 
     /**
      * Builds a COS client
-     * 
+     *
      * @param api_key
      * @param service_instance_id
      * @param endpoint_url
@@ -41,19 +41,19 @@ public class CosClient {
     }
 
     /**
-     * 
+     *
      * Writes a text file to a bucket
-     * 
+     *
      * @param bucketName
      * @param objectName
      * @param textObject
      */
     public void createStringObject(String bucketName, String objectName, String textObject) {
         InputStream newStream = new ByteArrayInputStream(textObject.getBytes(StandardCharsets.UTF_8));
-    
-        ObjectMetadata metadata = new ObjectMetadata();        
+
+        ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(textObject.length());
-    
+
         PutObjectRequest req = new PutObjectRequest(bucketName, objectName, newStream, metadata);
         cosClient.putObject(req);
     }
@@ -63,9 +63,9 @@ public class CosClient {
         final int bufferSize = 1024;
         final char[] buffer = new char[bufferSize];
         final StringBuilder out = new StringBuilder();
-    
+
         try {
-            S3Object item = cosClient.getObject(new GetObjectRequest(bucketName, objectName));     
+            S3Object item = cosClient.getObject(new GetObjectRequest(bucketName, objectName));
             InputStreamReader in = new InputStreamReader(item.getObjectContent());
 
             for (; ; ) {
@@ -83,7 +83,7 @@ public class CosClient {
 
     /**
      * List objects on Object Store
-     * 
+     *
      * @param bucketName
      * @param cosClient
      */
@@ -93,7 +93,7 @@ public class CosClient {
     }
 
     /**
-     * 
+     *
      * @param bucketName
      * @param objectName
      */
@@ -103,7 +103,7 @@ public class CosClient {
             cosClient.deleteObject(bucketName, objectName);
         } catch (Exception e) {
             throw new ObjectAccessException("Error deleting object:" + e.toString());
-        }    
-    }  
+        }
+    }
 
-}        
+}

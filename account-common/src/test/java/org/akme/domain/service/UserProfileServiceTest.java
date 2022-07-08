@@ -14,7 +14,7 @@ import org.akme.utils.Config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class UserProfileServiceTest { 
+class UserProfileServiceTest {
     UserProfileService userProfileService = new UserProfileService();
 
     static CosClient cosClient;
@@ -32,20 +32,20 @@ class UserProfileServiceTest {
         List<S3ObjectSummary> objects = cosClient.listObjects(usersBucket);
         for (S3ObjectSummary obj : objects) {
             cosClient.deleteObject(usersBucket, obj.getKey());
-        } 
+        }
     }
 
     @Test
     public void createUserProfile()  {
         UserProfile userProfile = makeUserProfile("u1234");
-        assertDoesNotThrow( () -> userProfileService.createUserProfile(userProfile)); 
+        assertDoesNotThrow( () -> userProfileService.createUserProfile(userProfile));
     }
 
     @Test
     public void deleteUserProfile() {
         UserProfile userProfile = makeUserProfile("u1234");
-        userProfileService.createUserProfile(userProfile); 
-        assertDoesNotThrow( () -> userProfileService.deleteUserProfile(userProfile.getId())); 
+        userProfileService.createUserProfile(userProfile);
+        assertDoesNotThrow( () -> userProfileService.deleteUserProfile(userProfile.getId()));
     }
 
     @Test
@@ -59,7 +59,7 @@ class UserProfileServiceTest {
     @Test
     public void getUserProfile() {
         UserProfile expected = makeUserProfile("u1234");
-        userProfileService.createUserProfile(expected); 
+        userProfileService.createUserProfile(expected);
         UserProfile actual = assertDoesNotThrow( () -> userProfileService.getUserProfile(expected.getId()));
         assertEquals(expected, actual);
     }
@@ -68,7 +68,7 @@ class UserProfileServiceTest {
     public void listUserProfiles() {
         for(int i=0; i<3; i++){
             UserProfile userProfile = makeUserProfile("u123"+i);
-            userProfileService.createUserProfile(userProfile); 
+            userProfileService.createUserProfile(userProfile);
         }
         List<UserProfile> userProfiles = userProfileService.getUserProfiles();
         assertEquals(3, userProfiles.size());
@@ -77,13 +77,13 @@ class UserProfileServiceTest {
     @Test
     public void updateUserProfile()  {
         UserProfile user = makeUserProfile("u1234");
-        userProfileService.createUserProfile(user); 
+        userProfileService.createUserProfile(user);
         UserProfile userToUpdate = userProfileService.getUserProfile(user.getId());
         userToUpdate.setPhoneNumber("111-111-1111");
         userProfileService.updateUserProfile(userToUpdate);
         UserProfile updatedUser = userProfileService.getUserProfile(user.getId());
         assertEquals(userToUpdate, updatedUser);
-    } 
+    }
 
     private UserProfile makeUserProfile(String userId){
         Address address = new Address("1 Main St", "New York", "US", "NY", "10000");

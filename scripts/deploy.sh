@@ -52,12 +52,18 @@ fi
 
 
 # Create the COS secret using COS information
-export COS_API_KEY=$(get_env AKME_COS_API_KEY)
-export COS_SERVICE_INSTANCE_ID=$(get_env AKME_COS_SERVICE_INSTANCE_ID "crn:v1:bluemix:public:cloud-object-storage:global:a/80c84878b3b02b88be3f836f0534b03e:0693b059-6e56-4eab-af12-7dddb1248c6d:bucket:akme-test-bucket")
-export COS_ENDPOINT_URL=$(get_env AKME_COS_ENDPOINT_URL "s3.eu-de.cloud-object-storage.appdomain.cloud")
-export COS_LOCATION=$(get_env AKME_COS_LOCATION "eu-de")
-export COS_ACCOUNTS_BUCKET=$(get_env AKME_COS_ACCOUNTS_BUCKET "akme-account-bucket")
-export COS_USERS_BUCKET=$(get_env AKME_COS_USERS_BUCKET "akme-users-bucket")
+export COS_API_KEY
+COS_API_KEY=$(get_env AKME_COS_API_KEY)
+export COS_SERVICE_INSTANCE_ID
+COS_SERVICE_INSTANCE_ID=$(get_env AKME_COS_SERVICE_INSTANCE_ID "crn:v1:bluemix:public:cloud-object-storage:global:a/80c84878b3b02b88be3f836f0534b03e:0693b059-6e56-4eab-af12-7dddb1248c6d:bucket:akme-test-bucket")
+export COS_ENDPOINT_URL
+COS_ENDPOINT_URL=$(get_env AKME_COS_ENDPOINT_URL "s3.eu-de.cloud-object-storage.appdomain.cloud")
+export COS_LOCATION
+COS_LOCATION=$(get_env AKME_COS_LOCATION "eu-de")
+export COS_ACCOUNTS_BUCKET
+COS_ACCOUNTS_BUCKET=$(get_env AKME_COS_ACCOUNTS_BUCKET "akme-account-bucket")
+export COS_USERS_BUCKET
+COS_USERS_BUCKET=$(get_env AKME_COS_USERS_BUCKET "akme-users-bucket")
 
 COS_SECRET="cos-secret"
 if kubectl get secret -n "$IBMCLOUD_IKS_CLUSTER_NAMESPACE" $COS_SECRET; then
@@ -85,10 +91,13 @@ fi
 export NS=${IBMCLOUD_IKS_CLUSTER_NAMESPACE}
 mss="account-command-ms account-query-ms"
 for ms in $mss; do
-  export IMG=$(load_artifact $ms name |  awk -F: '{print $1}')
-  export TAG=$(load_artifact $ms name |  awk -F: '{print $2}')
-  cd $ms 
+  export IMG
+  IMG=$(load_artifact "$ms" name |  awk -F: '{print $1}')
+  export TAG
+  TAG=$(load_artifact "$ms" name |  awk -F: '{print $2}')
+  cd "$ms" || exit 1
   make deploy
+  # shellcheck disable=SC2103
   cd ..
 done
 
@@ -97,29 +106,41 @@ done
 # in a single file
 export DEPLOYMENT_FILE=akmebank-ui-global-deployment.yaml
 for f in akmebank-ui/k8s/*.yaml; do
- cat $f >> $DEPLOYMENT_FILE
+ # shellcheck disable=SC2129
+ cat "$f" >> $DEPLOYMENT_FILE
  echo "" >> $DEPLOYMENT_FILE
  echo "---" >> $DEPLOYMENT_FILE
 done
 
 # Set environment variables context for the deployment script
 IMAGE_RESOURCE_URL=$(load_artifact akmebank-ui name)
-IMAGE_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $1}')
+IMAGE_URL=$(echo "$IMAGE_RESOURCE_URL" |  awk -F: '{print $1}')
 # Image name is remaining part after the repository and namespace and can contains /
-export IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
-export IMAGE_TAG=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $2}')
-export REGISTRY_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $1}')
-export REGISTRY_NAMESPACE=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $2}')
-export PIPELINE_BLUEMIX_API_KEY=$IBMCLOUD_API_KEY
-export PIPELINE_TOOLCHAIN_ID=$IBMCLOUD_TOOLCHAIN_ID
-export PIPELINE_KUBERNETES_CLUSTER_NAME="${IBMCLOUD_IKS_CLUSTER_NAME}"
-export CLUSTER_NAMESPACE="${IBMCLOUD_IKS_CLUSTER_NAMESPACE}"
+export IMAGE_NAME
+IMAGE_NAME=$(echo "$IMAGE_URL" |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
+export IMAGE_TAG
+IMAGE_TAG=$(echo "$IMAGE_RESOURCE_URL" |  awk -F: '{print $2}')
+export REGISTRY_URL
+REGISTRY_URL=$(echo "$IMAGE_RESOURCE_URL" |  awk -F/ '{print $1}')
+export REGISTRY_NAMESPACE
+REGISTRY_NAMESPACE=$(echo "$IMAGE_RESOURCE_URL" |  awk -F/ '{print $2}')
+export PIPELINE_BLUEMIX_API_KEY
+PIPELINE_BLUEMIX_API_KEY=$IBMCLOUD_API_KEY
+export PIPELINE_TOOLCHAIN_ID
+PIPELINE_TOOLCHAIN_ID=$IBMCLOUD_TOOLCHAIN_ID
+export PIPELINE_KUBERNETES_CLUSTER_NAME
+PIPELINE_KUBERNETES_CLUSTER_NAME="${IBMCLOUD_IKS_CLUSTER_NAME}"
+export CLUSTER_NAMESPACE
+CLUSTER_NAMESPACE="${IBMCLOUD_IKS_CLUSTER_NAMESPACE}"
 # pipeline build number is the doi build record id (if any)
-export SOURCE_BUILD_NUMBER=$BUILD_NUMBER
+export SOURCE_BUILD_NUMBER
+SOURCE_BUILD_NUMBER=$BUILD_NUMBER
 # For doi plugin invocation if needed
-export TOOLCHAIN_ID=$IBMCLOUD_TOOLCHAIN_ID
+export TOOLCHAIN_ID
+TOOLCHAIN_ID=$IBMCLOUD_TOOLCHAIN_ID
 touch build.properties
 
+# shellcheck disable=SC1090
 source <(curl -sSL "https://us-south.git.cloud.ibm.com/open-toolchain/commons/-/raw/main/scripts/check_and_deploy_kubectl.sh")
 
 set_env APP_URL "${APP_URL}"

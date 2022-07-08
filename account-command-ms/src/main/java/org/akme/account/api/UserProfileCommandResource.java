@@ -16,7 +16,7 @@ public class UserProfileCommandResource {
 
     @Inject
     public UserProfileCommandService userProfileCommandService;
-    
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,7 +45,7 @@ public class UserProfileCommandResource {
         userProfileCommandService.updateUserProfile(user);
 	    return Response.ok().build();
     }
-    
+
     @DELETE
     @Path("{Id}")
     @Consumes(MediaType.APPLICATION_JSON)

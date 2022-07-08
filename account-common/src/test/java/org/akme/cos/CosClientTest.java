@@ -24,14 +24,14 @@ class CosClientTest {
         List<S3ObjectSummary> objects = cosClient.listObjects(testBucket);
         for (S3ObjectSummary obj : objects) {
             cosClient.deleteObject(testBucket, obj.getKey());
-        } 
+        }
     }
 
     @Test
     public void testWriteStringObject() {
-        String expected = "hello this is a test string"; 
+        String expected = "hello this is a test string";
         String key = "key";
-        assertDoesNotThrow( () -> cosClient.createStringObject(testBucket, key, expected)); 
+        assertDoesNotThrow( () -> cosClient.createStringObject(testBucket, key, expected));
         String actual = assertDoesNotThrow( () -> cosClient.getStringObject(testBucket, key));
         assertEquals(expected, actual);
         cosClient.deleteObject(testBucket, key);
@@ -39,11 +39,11 @@ class CosClientTest {
 
     @Test
     public void testUpdateStringObject() {
-        String val = "hello this is a test string"; 
+        String val = "hello this is a test string";
         String key = "keyupd";
-        assertDoesNotThrow( () -> cosClient.createStringObject(testBucket, key, val)); 
+        assertDoesNotThrow( () -> cosClient.createStringObject(testBucket, key, val));
         String updval = "hello this is an update test string";
-        assertDoesNotThrow( () -> cosClient.createStringObject(testBucket, key, updval)); 
+        assertDoesNotThrow( () -> cosClient.createStringObject(testBucket, key, updval));
         String actual = assertDoesNotThrow( () -> cosClient.getStringObject(testBucket, key));
         assertEquals(updval, actual);
         cosClient.deleteObject(testBucket, key);

@@ -1,15 +1,15 @@
-# Demo for Akme Bank with COS    
- 
-App based on [Command Query Responsibility Segregation (CQRS)](https://martinfowler.com/bliki/CQRS.html)
-Using Java and Quarkus and COS Java SDK. 
- 
-## Deploying
-  
-Deploying the account-command-ms: 
+# Demo for Akme Bank with COS
 
-```bash 
-cd account-command-ms 
-make deploy 
+App based on [Command Query Responsibility Segregation (CQRS)](https://martinfowler.com/bliki/CQRS.html)
+Using Java and Quarkus and COS Java SDK.
+
+## Deploying
+
+Deploying the account-command-ms:
+
+```bash
+cd account-command-ms
+make deploy
 ```
 
 Deploying the account-query-ms:
@@ -34,7 +34,7 @@ Commands:
   accounts list-users                   list all users
   accounts list-accounts                list all accounts
 ```
- 
+
 To create 10 random users with accounts, run:
 
 ```bash
@@ -66,7 +66,7 @@ kubectl run cli --rm -it --image us.icr.io/paolo/account-cli --restart=Never --q
 kubectl run cli --rm -it --image us.icr.io/paolo/account-cli --restart=Never --quiet=true -- delete-users
 ```
 
-## AKME Terraform configuration for Cloud infrastructure. 
+## AKME Terraform configuration for Cloud infrastructure.
 
 ![AKME Architecture](./AKME_arch1.png)
 
