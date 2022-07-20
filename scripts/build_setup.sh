@@ -42,7 +42,7 @@ set +e
 REPOSITORY="$(cat /config/repository)"
 set -e
 if [[ "${REPOSITORY}" ]]; then
-  IMAGE_NAME=$(basename $REPOSITORY .git)
+  IMAGE_NAME=$(basename "$REPOSITORY" .git)
 else
   IMAGE_NAME="$(cat /config/app-name)"
 fi
@@ -64,7 +64,7 @@ else
 
   # Create the namespace if needed to ensure the push will be can be successfull
   echo "Checking registry namespace: ${ICR_REGISTRY_NAMESPACE}"
-  IBM_LOGIN_REGISTRY_REGION=$(cat /config/registry-region | awk -F: '{print $3}')
+  IBM_LOGIN_REGISTRY_REGION=$(awk -F: '{print $3}' < /config/registry-region)
   ibmcloud login --apikey @/config/api-key -r "$IBM_LOGIN_REGISTRY_REGION"
   NS=$( ibmcloud cr namespaces | sed 's/ *$//' | grep -x "${ICR_REGISTRY_NAMESPACE}" ||: )
 
@@ -77,4 +77,5 @@ else
   fi
 fi
 
+export DOCKER_BUILD_ARGS
 DOCKER_BUILD_ARGS="-t $IMAGE"

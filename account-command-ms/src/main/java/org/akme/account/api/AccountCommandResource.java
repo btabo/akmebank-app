@@ -18,7 +18,7 @@ public class AccountCommandResource {
 
     @Inject
     public AccountCommandService accountCommandService;
-    
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,7 +47,7 @@ public class AccountCommandResource {
         accountCommandService.updateAccount(account);
 	    return Response.ok().build();
     }
-    
+
     @DELETE
     @Path("{Id}")
     @Consumes(MediaType.APPLICATION_JSON)

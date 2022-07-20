@@ -37,6 +37,7 @@ params=(
 # add the deployment files in each as a build artifact to the inventory
 #
 APP_TOKEN_PATH="./app-token"
+# shellcheck disable=SC2034
 read -r APP_REPO_NAME APP_REPO_OWNER APP_SCM_TYPE APP_API_URL < <(get_repo_params "$(get_env APP_REPO)" "$APP_TOKEN_PATH")
 APP_ABSOLUTE_SCM_TYPE=$(get_absolute_scm_type "$(get_env APP_REPO)")
 
@@ -44,13 +45,13 @@ token=$(cat $APP_TOKEN_PATH)
 
 mss="account-command-ms account-query-ms akmebank-ui"
 for ms in $mss; do
-  for f in $ms/k8s/*; do
-    echo $f
+  for f in "$ms"/k8s/*; do
+    echo "$f"
     echo "APP_SCM_TYPE=$APP_SCM_TYPE"
     echo "APP_ABSOLUTE_SCM_TYPE=$APP_ABSOLUTE_SCM_TYPE"
     if [ "$APP_SCM_TYPE" == "gitlab" ]; then
-        id=$(curl --header "PRIVATE-TOKEN: ${token}" ${APP_API_URL}/projects/${APP_REPO_ORG}%2F${APP_REPO_NAME} | jq .id)
-        file_path=$(echo $f | jq -rR '@uri')
+        id=$(curl --header "PRIVATE-TOKEN: ${token}" "${APP_API_URL}/projects/${APP_REPO_ORG}%2F${APP_REPO_NAME}" | jq .id)
+        file_path=$(echo "$f" | jq -rR '@uri')
         DEPLOYMENT_ARTIFACT="${APP_API_URL}/projects/${id}/repository/files/$file_path/raw?ref=${COMMIT_SHA}"
     else
         if [ "$APP_ABSOLUTE_SCM_TYPE" == "github_integrated" ]; then
@@ -72,10 +73,10 @@ for ms in $mss; do
         --type="deployment" \
         --sha256="${DEPLOYMENT_ARTIFACT_DIGEST}" \
         --signature="${DEPLOYMENT_ARTIFACT_DIGEST}" \
-        --name="${APP_REPO_NAME}_${ms}_$(basename -s .yaml $f)" \
+        --name="${APP_REPO_NAME}_${ms}_$(basename -s .yaml "$f")" \
         "${params[@]}"
   done
-done 
+done
 
 #
 # add all built images as build artifacts to the inventory

@@ -16,8 +16,8 @@
     <module>account-query-ms</module>
     <module>account-common</module>
   </modules>
- 
-  <dependencies>  
+
+  <dependencies>
   </dependencies>
 
   <build>

@@ -13,7 +13,7 @@ import org.akme.utils.Config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class AccountServiceTest { 
+class AccountServiceTest {
     AccountService accountService = new AccountService();
     static CosClient cosClient;
 
@@ -29,20 +29,20 @@ class AccountServiceTest {
         List<S3ObjectSummary> objects = cosClient.listObjects(accountsBucket);
         for (S3ObjectSummary obj : objects) {
             cosClient.deleteObject(accountsBucket, obj.getKey());
-        } 
+        }
     }
 
     @Test
     public void createAccount()  {
         Account account = new Account("12345",Account.CHEKING_ACCOUNT, 100.00, 100.00, 0.01);
-        assertDoesNotThrow( () -> accountService.createAccount(account)); 
+        assertDoesNotThrow( () -> accountService.createAccount(account));
     }
 
     @Test
     public void deleteAccount() {
         Account account = new Account("123456",Account.CHEKING_ACCOUNT, 100.00, 100.00, 0.01);
-        accountService.createAccount(account); 
-        assertDoesNotThrow( () -> accountService.deleteAccount(account.getId())); 
+        accountService.createAccount(account);
+        assertDoesNotThrow( () -> accountService.deleteAccount(account.getId()));
     }
 
     @Test
@@ -56,7 +56,7 @@ class AccountServiceTest {
     @Test
     public void getAccount() {
         Account expected = new Account("12345678",Account.CHEKING_ACCOUNT, 100.00, 100.00, 0.01);
-        accountService.createAccount(expected); 
+        accountService.createAccount(expected);
         Account actual = assertDoesNotThrow( () -> accountService.getAccount(expected.getId()));
         assertEquals(expected, actual);
     }
@@ -65,7 +65,7 @@ class AccountServiceTest {
     public void listAccounts() {
         for(int i=0; i<3; i++){
             Account account = new Account("123456-"+i,Account.CHEKING_ACCOUNT, 100.00, 100.00, 0.01);
-            accountService.createAccount(account); 
+            accountService.createAccount(account);
         }
         List<Account> accounts = accountService.getAccounts();
         assertEquals(3, accounts.size());
@@ -74,12 +74,12 @@ class AccountServiceTest {
     @Test
     public void updateAccount()  {
         Account acct = new Account("12345678",Account.CHEKING_ACCOUNT, 100.00, 100.00, 0.01);
-        accountService.createAccount(acct); 
+        accountService.createAccount(acct);
         Account acctToUpdate = accountService.getAccount(acct.getId());
         acctToUpdate.setAvailableBalance(1000.00);
         acctToUpdate.setPresentBalance(1000.00);
         accountService.updateAccount(acctToUpdate);
         Account updatedAccount = accountService.getAccount(acct.getId());
         assertEquals(acctToUpdate, updatedAccount);
-    }    
+    }
 }

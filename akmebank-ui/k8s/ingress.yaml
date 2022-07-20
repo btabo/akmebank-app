@@ -12,7 +12,7 @@ spec:
         backend:
           service:
             name: akmebank-ui-cip
-            port: 
+            port:
               number: 80
   tls:
   - hosts:

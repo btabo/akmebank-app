@@ -19,7 +19,7 @@ public class AccountQueryResourceTest {
     @Test
     public void testGetAccount() {
         Account account = new Account("12345",Account.CHEKING_ACCOUNT, 100.00, 100.00, 0.01);
-        accountService.createAccount(account); 
+        accountService.createAccount(account);
         given()
           .when().get("/accounts/12345")
           .then()

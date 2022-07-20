@@ -16,7 +16,7 @@ public class UserProfileQueryResource {
 
     @Inject
     public UserProfileQueryService userProfileQueryService;
-    
+
     @GET
     @Path("{Id}")
     @Produces(MediaType.APPLICATION_JSON)

@@ -46,7 +46,7 @@ Commands:
   accounts list-users                   list all users
   accounts list-accounts                list all accounts
 ```
- 
+
 To create 10 random users with accounts, run:
 
 ```bash
@@ -78,6 +78,6 @@ kubectl run cli --rm -it --image us.icr.io/paolo/account-cli --restart=Never --q
 kubectl run cli --rm -it --image us.icr.io/paolo/account-cli --restart=Never --quiet=true -- delete-users
 ```
 
-## AKME Terraform configuration for Cloud infrastructure. 
+## AKME Terraform configuration for Cloud infrastructure.
 
 ![AKME Architecture](./AKME_arch1.png)

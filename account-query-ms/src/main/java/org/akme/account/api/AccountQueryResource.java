@@ -17,7 +17,7 @@ public class AccountQueryResource {
 
     @Inject
     public AccountQueryService accountQueryService;
-    
+
     @GET
     @Path("{Id}")
     @Produces(MediaType.APPLICATION_JSON)
