@@ -7,7 +7,7 @@ Using Java and Quarkus and COS Java SDK.
 
 ## Steps
 
-This sample contains an simple Go application that can be deployed by using the following links to create a [CI-toolchain](https://cloud.ibm.com/devops/setup/deploy?repository=https%3A%2F%2Fus-south.git.cloud.ibm.com%2Fopen-toolchain%2Fcompliance-ci-toolchain&env_id=ibm:yp:us-south&sourceRepoUrl=https://github.ibm.com/cd-jumpstart/akmebank-app) and a [CD-toolchain](https://cloud.ibm.com/devops/setup/deploy?repository=https%3A%2F%2Fus-south.git.cloud.ibm.com%2Fopen-toolchain%2Fcompliance-cd-toolchain&env_id=ibm:yp:us-south&onePipelineRepo=https://github.ibm.com/cd-jumpstart/akmebank-deployment).
+This sample contains a Java and Quarkus application that can be deployed by using the following links to create a [CI-toolchain](https://cloud.ibm.com/devops/setup/deploy?repository=https%3A%2F%2Fus-south.git.cloud.ibm.com%2Fopen-toolchain%2Fcompliance-ci-toolchain&env_id=ibm:yp:us-south&sourceRepoUrl=https://github.ibm.com/cd-jumpstart/akmebank-app) and a [CD-toolchain](https://cloud.ibm.com/devops/setup/deploy?repository=https%3A%2F%2Fus-south.git.cloud.ibm.com%2Fopen-toolchain%2Fcompliance-cd-toolchain&env_id=ibm:yp:us-south&onePipelineRepo=https://github.ibm.com/cd-jumpstart/akmebank-deployment).
 
 Note: An alternative way is to create the CI and CD toolchain using default values and then add a git tool integration to this git repository - https://github.ibm.com/cd-jumpstart/akmebank-app - or a fork of it.
 
